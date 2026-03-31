@@ -11,6 +11,79 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    public function register_user(Request $request)
+    {
+        $message_error = [
+            'name.required' => 'Nama wajib isi',
+            'email.required' => 'Email wajib isi',
+            'role_id.required' => 'Role wajib isi',
+            'email.email' => 'Email harus valid',
+            'password.required' => 'Password wajib isi',
+            'email.min' => 'Email minimal harus 8 karakter'
+        ];
+
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+            'role_id' => 'required',
+            'password' => 'required|min:8'
+        ], $message_error);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'role_id' => $request->role_id,
+            'salary' => $request->salary,
+            'password' => Hash::make($request->password)
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Registrasi Berhasil',
+            'data' => $user,
+            'code' => 201
+        ]);
+    }
+
+    public function register_customer(Request $request)
+    {
+        $message_error = [
+            'name.required' => 'Nama wajib isi',
+            'email.required' => 'Email wajib isi',
+            'email.email' => 'Email harus valid',
+            'phone_number.required' => 'Nomor Telepon wajib isi',
+            'address.required' => 'Alamat wajib isi',
+            'password.required' => 'Password wajib isi',
+            'email.min' => 'Email minimal harus 8 karakter',
+            'phone_number.min' => 'Nomor Telepon minimal harus 12 karakter'
+        ];
+
+        $request->validate([
+            'name' => 'required',
+            'address' => 'required',
+            'phone_number' => 'required|min:12',
+            'email' => 'required|email',
+            'password' => 'required|min:8'
+        ], $message_error);
+
+        $customer = Customer::create([
+            'name' => $request->name,
+            'address' => $request->address,
+            'phone_number' => $request->phone_number,
+            'email' => $request->email,
+            'password' => Hash::make($request->password)
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Registrasi Berhasil',
+            'data' => $customer,
+            'code' => 201
+        ]);
+    }
+
     public function login_user(Request $request)
     {
         $message_error = [
