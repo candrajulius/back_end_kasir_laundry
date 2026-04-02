@@ -16,4 +16,5 @@ class Promo extends Model
     {
         return $this->hasMany(Transaction::class);
     }
+
 }
