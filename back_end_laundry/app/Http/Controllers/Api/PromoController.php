@@ -37,6 +37,12 @@ class PromoController extends Controller
     {
         //
         $customer = auth('customer')->user();
+
+        $request->validate([
+            'promo_code' => 'required|string',
+            'subtotal' => 'required|numeric|min:0'
+        ]);
+
         $promo = Promo::where('promo_code', $request->promo_code)->first();
 
         if (!$promo){
@@ -65,7 +71,7 @@ class PromoController extends Controller
 
         $alreadyUsed = Transaction::where('customer_id', $customer->id)
             ->where('promo_id', $promo->id)
-            ->where('paymnent_status', 1) // misalnya 1 = paid
+            ->where('paymnent_status', 2) // misalnya 2 = used
             ->exists();
 
         if ($alreadyUsed){
@@ -76,19 +82,31 @@ class PromoController extends Controller
             ]));
         }
 
+        //  HITUNG DISKON
+        $subtotal = $request->subtotal;
+
+        if ($promo->discount_type == 0){ // percentage
+            $discount = ($promo->discount_value / 100) * $subtotal;
+        } else { // fixed
+            $discount = $promo->discount_value;
+        }
+
+        $discount = min($discount, $subtotal);
+
+        $total = $subtotal - $discount;
+
         return response()->json(([
             'success' => true,
             'message' => 'Kode promo berhasil diterapkan',
-            'data' => $promo,
+            'data' => [
+                'promo_id' => $promo->id,
+                'promo_code' => $promo->promo_code,
+                'subtotal' => $subtotal,
+                'discount' => $discount,
+                'total' => $total
+            ],
             'code' => 200
         ]));
-        // if ($promo->start_date > now() || $promo->end_date < now()){
-        //     return response()->json(([
-        //         'success' => false,
-        //         'message' => 'Kode promo tidak aktif',
-        //         'code' => 400
-        //     ]));
-        // }
     }
 
     /**
@@ -130,7 +148,7 @@ class PromoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
         //
         $promo = Promo::find($id);

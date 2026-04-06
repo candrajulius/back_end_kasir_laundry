@@ -12,8 +12,8 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'invoice_number', 'customer_id', 'user_id', 'promo_id', 'status', 'payment_status', 
-        'subtotal', 'discount_amount', 'tax_amount', 'total_amount', 'notes', 
+        'invoice_number', 'customer_id', 'user_id', 'promo_id', 'status', 'payment_status',
+        'subtotal', 'discount_amount', 'tax_amount', 'total_amount', 'notes',
         'received_at', 'completed_at'
     ];
 
@@ -21,6 +21,10 @@ class Transaction extends Model
     const STATUS_PROCESSING = 1;
     const STATUS_COMPLETED = 2;
     const STATUS_FAILED = 99;
+
+    const PAYMENT_PENDING = 0;
+    const PAYMENT_PAID = 1;
+    const PAYMENT_FAILED = 99;
 
     public function customer()
     {

@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\PromoController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->controller(AuthController::class)->group(function(){
@@ -29,8 +30,27 @@ Route::prefix('role')->controller(RoleController::class)->group(function(){
     });
 });
 
+Route::prefix('transaction')->controller(TransactionController::class)->group(function(){
+
+    Route::middleware('auth:customers')->group(function(){
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::get('/{id}', 'show');
+    });
+
+    Route::middleware('auth:sanctum')->group(function(){
+        Route::put('/{id}', 'update');
+        Route::get('/queue', 'queue');
+        Route::get('/processing', 'processing');
+        Route::get('/completed', 'completed');
+        Route::put('/take/{id}', 'take');
+        Route::put('/complete/{id}', 'complete');
+        Route::delete('/{id}', 'destroy');
+    });
+});
+
 Route::prefix('service')->controller(ServiceController::class)->group(function(){
-    
+
     Route::middleware('auth:customers')->group(function(){
         Route::get('/', 'index');
     });
@@ -44,7 +64,7 @@ Route::prefix('service')->controller(ServiceController::class)->group(function()
 });
 
 Route::prefix('promo')->controller(PromoController::class)->group(function(){
-    
+
     Route::middleware('auth:customers')->group(function(){
         Route::post('/apply_promo', 'apply_promo');
         Route::get('/{id}', 'show');
