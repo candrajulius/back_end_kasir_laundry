@@ -30,6 +30,7 @@ Route::prefix('role')->controller(RoleController::class)->group(function(){
     });
 });
 
+
 Route::prefix('transaction')->controller(TransactionController::class)->group(function(){
 
     Route::middleware('auth:customers')->group(function(){
@@ -44,8 +45,8 @@ Route::prefix('transaction')->controller(TransactionController::class)->group(fu
         Route::get('/processing', 'processing');
         Route::get('/completed', 'completed');
         Route::put('/take/{id}', 'take');
-        Route::put('/complete/{id}', 'complete');
-        Route::delete('/{id}', 'destroy');
+        Route::put('/payed/{id}', 'pay');
+        // Route::delete('/{id}', 'destroy');
     });
 });
 
